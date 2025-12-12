@@ -1,0 +1,37 @@
+version: '3.9'
+services:
+  web:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://idp:idp@db:5432/idp
+      - REDIS_URL=redis://redis:6379/0
+      - JWT_SECRET=changeme
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+  worker:
+    build: .
+    command: celery -A app.services.jobs worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://idp:idp@db:5432/idp
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: idp
+      POSTGRES_USER: idp
+      POSTGRES_PASSWORD: idp
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
