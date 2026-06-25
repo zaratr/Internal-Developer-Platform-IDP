@@ -114,5 +114,7 @@ class AuditLog(Base):
     entity_type: Mapped[str] = mapped_column(String(100), nullable=False)
     entity_id: Mapped[str] = mapped_column(String(100), nullable=False)
     performed_by: Mapped[str] = mapped_column(String(255), nullable=False)
-    metadata: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)
+    # DB column is still "metadata"; the Python attribute is "details"
+    # because "metadata" is reserved by SQLAlchemy's DeclarativeBase.
+    details: Mapped[Dict[str, Any]] = mapped_column("metadata", JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
