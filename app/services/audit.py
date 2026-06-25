@@ -13,7 +13,7 @@ async def log_action(
         entity_type=entity_type,
         entity_id=entity_id,
         performed_by=performed_by,
-        metadata=metadata,
+        details=metadata,
     )
     db.add(entry)
     await db.commit()
